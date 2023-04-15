@@ -75,8 +75,6 @@ void print_dir()
 int main(int argc, char *argv[])
 {
 
-    setLocale(LC_ALL,"");
-    
     if (strcmp(argv[1], "ls") == 0)
     {
         list_dir();
@@ -84,7 +82,15 @@ int main(int argc, char *argv[])
 
     else if (strcmp(argv[1], "cd") == 0)
     {
-        change_dir(argv[2]);
+        if (!argv[2])
+        {
+            std::cerr << "Caminho faltando: cd [CAMINHO]" << std::endl;
+        }
+        else
+        {
+
+            change_dir(argv[2]);
+        }
     }
     else if (strcmp(argv[1], "pwd") == 0)
     {
