@@ -51,6 +51,9 @@ void print_dir()
 
 int main(int argc, char *argv[])
 {
+
+    setLocale(LC_ALL,"");
+    
     if (strcmp(argv[1], "ls") == 0)
     {
         list_dir();
