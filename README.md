@@ -2,10 +2,12 @@
 
 
 
-#Projeto Prototerminal em C
+# Projeto Prototerminal em C
+
 Este projeto é um protótipo de um terminal de linha de comando escrito em linguagem C.
 
-##Como usar
+## Como usar
+
 Para usar o prototerminal, siga as seguintes etapas:
 
 Clone ou baixe este repositório em seu computador.
