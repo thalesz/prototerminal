@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstring>
 
+// Lista pastas e arquivos do diretório atual
 int list_dir()
 {
     char buffer[FILENAME_MAX];
@@ -27,6 +28,7 @@ int list_dir()
     return 0;
 }
 
+// Muda diretório
 void change_dir(char *dir)
 {
     if (chdir(dir) == 0)
@@ -39,6 +41,7 @@ void change_dir(char *dir)
     }
 }
 
+// Imprime caminho completo do diretório atual
 void print_dir()
 {
     char buffer[FILENAME_MAX];
