@@ -108,6 +108,7 @@ int main(/*int argc, char *entrada[]*/)
         else if (strcmp(&entrada[1], "pwd") == 0)
         {
             print_dir();
+            
         }
         else if (strncmp(entrada, "cat", 3) == 0)
         {
