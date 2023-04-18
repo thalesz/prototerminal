@@ -4,7 +4,7 @@
 
 # Projeto Prototerminal em C++
 
-Este projeto é um protótipo de um terminal de linha de comando escrito em linguagem C.
+Este projeto é um protótipo de um terminal de linha de comando escrito em linguagem C++.
 
 ## Como usar
 
