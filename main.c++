@@ -6,11 +6,13 @@
 #include <cstring>
 #include <fstream>
 #include <string>
+#include <sstream>
+#include <vector>
 #define TAM 10000
 
 
 // Imprime conteúdo de um arquivo
-int cat(char *filename)
+int more(char *filename)
 {
     std::ifstream file(filename);
     if (!file.is_open())
@@ -23,12 +25,77 @@ int cat(char *filename)
     std::cout << "Conteudo do arquivo: " << std::endl;
     while (std::getline(file, line))
     {
-        std::cout << line << std::endl;
+        std::cout << line <<"\n"<<std::endl;
     }
 
     file.close();
     return 0;
 }
+int cat(char *input)
+{
+    std::istringstream iss(input);
+
+    std::vector<std::string> filenames;
+    std::string filename, output_filename;
+
+    bool redirect_output = false;
+
+    // Loop through each token (filename) separated by whitespace
+    while (iss >> filename) {
+        if (filename == ">") {
+            iss >> output_filename;
+            redirect_output = true;
+        } else {
+            filenames.push_back(filename);
+        }
+    }
+
+    if (redirect_output) {
+        // Redireciona a saída padrão para o arquivo de saída
+        std::ofstream output_file(output_filename, std::ios::out); // adicionado std::ios::out
+        if (!output_file.is_open()) {
+            std::cerr << "Erro ao criar o arquivo " << output_filename << std::endl;
+            return 1;
+        }
+
+        for (const auto& filename : filenames) {
+            std::ifstream input_file(filename);
+            if (!input_file.is_open()) {
+                std::cerr << "Erro ao abrir o arquivo " << filename << std::endl;
+                return 1;
+            }
+
+            std::string line;
+            while (std::getline(input_file, line)) {
+                output_file << line << std::endl;
+            }
+
+            input_file.close();
+        }
+
+        output_file.close();
+    } else {
+        // Exibe o conteúdo dos arquivos de entrada na tela
+        for (const auto& filename : filenames) {
+            std::ifstream file(filename);
+            if (!file.is_open()) {
+                std::cerr << "Erro ao abrir o arquivo " << filename << std::endl;
+                return 1;
+            }
+
+            std::string line;
+            std::cout << "Conteudo do arquivo " << filename << ":" << std::endl;
+            while (std::getline(file, line)) {
+                std::cout << line << std::endl;
+            }
+
+            file.close();
+        }
+    }
+
+    return 0;
+}
+
 
 // Lista pastas e arquivos do diretório atual
 int list_dir()
@@ -118,8 +185,16 @@ int main(/*int argc, char *entrada[]*/)
             }
             else
             {
-
                 cat(&entrada[4]);
+            }
+        }else if(strncmp(entrada, "more", 4) == 0){
+            if (!entrada[4])
+            {
+                std::cerr << "Nome do arquivo faltando: more [NOME_ARQUIVO]" << std::endl;
+            }
+            else
+            {
+                more(&entrada[4]);
             }
         }
         else if(strcmp(entrada, "exit"))
