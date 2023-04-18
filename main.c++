@@ -12,25 +12,27 @@
 
 
 // Imprime conteúdo de um arquivo
-int more(char *filename)
-{
+int more(char *filename) {
     std::ifstream file(filename);
-    if (!file.is_open())
-    {
-        std::cerr << "Erro ao abrir o arquivo" << filename << std::endl;
-        return 1;
+    if (!file.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo " << filename << std::endl;
+        return 0;
     }
 
     std::string line;
-    std::cout << "Conteudo do arquivo: " << std::endl;
-    while (std::getline(file, line))
-    {
-        std::cout << line <<"\n"<<std::endl;
+    int line_num = 0;
+    while (std::getline(file, line)) {
+        if (line_num % 20 == 0 && line_num != 0) {
+            std::cout << "-- Mais(Pressione Enter)--" << std::endl;
+            std::cin.get();
+        }
+        std::cout << line << std::endl;
+        line_num++;
     }
 
     file.close();
-    return 0;
 }
+
 int cat(char *input)
 {
     std::istringstream iss(input);
@@ -188,13 +190,13 @@ int main(/*int argc, char *entrada[]*/)
                 cat(&entrada[4]);
             }
         }else if(strncmp(entrada, "more", 4) == 0){
-            if (!entrada[4])
+            if (!entrada[5])
             {
                 std::cerr << "Nome do arquivo faltando: more [NOME_ARQUIVO]" << std::endl;
             }
             else
             {
-                more(&entrada[4]);
+                more(&entrada[5]);
             }
         }
         else if(strcmp(entrada, "exit"))
