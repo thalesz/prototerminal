@@ -12,6 +12,50 @@
 
 
 // Imprime conteúdo de um arquivo
+void head(char *input) {
+    std::istringstream iss(input);
+    std::string arg1, arg2, arg3;
+
+    iss >> arg1 >> arg2 >> arg3;
+
+    std::ifstream file;
+    int num_lines = 10; // número padrão de linhas
+
+    // Verifica se o segundo argumento é uma opção
+    if (arg1 == "-n") {
+        // Lê o número de linhas a partir do argumento -n
+        num_lines = std::stoi(arg2);
+        arg2 = arg3;
+    }
+    else {
+        arg2 = arg1;
+    }
+
+    file.open(arg2);
+    if (!file.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo " << arg2 << std::endl;
+        return;
+    }
+
+    std::vector<std::string> lines;
+    std::string line;
+
+    // Lê as primeiras n linhas do arquivo
+    for (int i = 0; i < num_lines && std::getline(file, line); i++) {
+        lines.push_back(line);
+    }
+
+    // Imprime as linhas lidas
+    for (const auto& line : lines) {
+        std::cout << line << std::endl;
+    }
+
+    file.close();
+}
+
+
+
+
 int more(char *filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
@@ -197,6 +241,15 @@ int main(/*int argc, char *entrada[]*/)
             else
             {
                 more(&entrada[5]);
+            }
+        }else if(strncmp(entrada, "head", 4) == 0){
+            if (!entrada[5])
+            {
+                std::cerr << "Nome do arquivo faltando: head [NOME_ARQUIVO]" << std::endl;
+            }
+            else
+            {
+                head(&entrada[5]);
             }
         }
         else if(strcmp(entrada, "exit"))
