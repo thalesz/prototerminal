@@ -13,7 +13,7 @@
 
 
 // Imprime conteúdo de um arquivo
-void head(char *input) {
+void head(char *input) {  \\aaa 
     std::istringstream iss(input);
     std::string arg1, arg2, arg3;
 
