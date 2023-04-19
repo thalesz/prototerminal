@@ -200,7 +200,7 @@ int main(/*int argc, char *entrada[]*/)
     //scanf("%c", )
     while(strcmp(entrada, "exit")){
 
-        GetCurrentDirectory(MAX_PATH, buffer);
+        GetModuleFileName(NULL, buffer, MAX_PATH);
         std::cout << buffer << "\\" << "~$ ";
         std::cin.getline(entrada, TAM);
         
