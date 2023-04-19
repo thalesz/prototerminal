@@ -8,6 +8,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <cstdlib>
 #define TAM 10000
 
 
@@ -218,7 +219,7 @@ int main(/*int argc, char *entrada[]*/)
                 change_dir(&entrada[3]);
             }
         }
-        else if (strcmp(&entrada[1], "pwd") == 0)
+        else if (strcmp(&entrada[0], "pwd") == 0)
         {
             print_dir();
             
@@ -252,11 +253,25 @@ int main(/*int argc, char *entrada[]*/)
                 head(&entrada[5]);
             }
         }
-        else if(strcmp(entrada, "exit"))
+        else if(strcmp(entrada, "exit")) //implementando a leitura de programa 
         {
-            std::cerr << "Comando não encontrado" << std::endl;
+            
+            if (entrada[0] == '.' && entrada[1] == '/') { // separa se tiver ./
+                for (int i = 0; i < strlen(entrada); i++) {
+                    entrada[i] = entrada[i + 2];
+                }
+            }
+
+            //std::cout<<entrada<<std::endl;
+            
+            std::ifstream file(entrada);
+            if (!file.is_open()) {
+                std::cerr << "Erro ao abrir o arquivo " << entrada << std::endl;
+                //return 1;
+            }
+            //std::cerr << "Comando não encontrado" << std::endl;
         }
-        //std::cerr << "\n" << std::endl;
+        std::cerr << "\n" << std::endl;
     }
     delete[] entrada;   
 }
