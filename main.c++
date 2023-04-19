@@ -201,8 +201,8 @@ int main(/*int argc, char *entrada[]*/)
     //scanf("%c", )
     while(strcmp(entrada, "exit")){
 
-        GetCurrentDirectory(MAX_PATH, buffer);
-        std::cout << buffer << "\\" << "aaaa ";
+        GetModuleFileName(NULL, buffer, MAX_PATH);
+        std::cout << buffer << "\\" << "~$ ";
         std::cin.getline(entrada, TAM);
         
         if (strcmp(entrada, "ls") == 0)
@@ -219,7 +219,8 @@ int main(/*int argc, char *entrada[]*/)
                 change_dir(&entrada[3]);
             }
         }
-        else if (strcmp(&entrada[0], "pwd") == 0)
+        //else if (strcmp(&entrada[0], "pwd") == 0)
+        else if (strcmp(entrada, "pwd") == 0)
         {
             print_dir();
             
