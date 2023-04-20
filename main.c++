@@ -1,4 +1,3 @@
-#include <windows.h>
 #include <iostream>
 #include <dirent.h>
 #include <unistd.h>
@@ -9,10 +8,10 @@
 #include <sstream>
 #include <vector>
 #include <cstdlib>
+#include <sys/wait.h>
+#include <window.h>
 #define TAM 10000
 
-
-// Imprime conteúdo de um arquivo
 void head(char *input) {
     std::istringstream iss(input);
     std::string arg1, arg2, arg3;
@@ -76,6 +75,7 @@ int more(char *filename) {
     }
 
     file.close();
+    return 1;
 }
 
 int cat(char *input)
@@ -143,13 +143,9 @@ int cat(char *input)
     return 0;
 }
 
-
 // Lista pastas e arquivos do diretório atual
-int list_dir()
+int list_dir(char *current_dir)
 {
-    char buffer[FILENAME_MAX];
-    char *current_dir = getcwd(buffer, FILENAME_MAX);
-
     DIR *directory = opendir(current_dir);
 
     if (directory == nullptr)
@@ -171,43 +167,66 @@ int list_dir()
 // Muda diretório
 void change_dir(char *dir)
 {
-    if (chdir(dir) == 0)
-    {
-        std::cout << "Diretorio: " << dir << std::endl;
-    }
-    else
+    if (chdir(dir) != 0)
     {
         std::cout << "Erro ao mudar de diretório" << std::endl;
     }
 }
 
 // Imprime caminho completo do diretório atual
-void print_dir()
+void print_dir(char *current_dir)
 {
-    char buffer[FILENAME_MAX];
-    char *current_dir = getcwd(buffer, FILENAME_MAX);
     std::cout << current_dir << std::endl;
 }
 
-int main(/*int argc, char *entrada[]*/)
+// Joga o output do progama para o arquivo saída
+int output_to_file(char * entrada){
+    char * filename = &entrada[10];
+    std::ofstream outfile(filename);
+    if (!outfile.is_open())
+        {
+            std::cerr << "Erro ao abrir o arquivo" << filename << std::endl;
+            return 1;
+        }
+    outfile << "A saída do programa foi colocada aqui" << std::endl;
+    outfile.close();   
+    return 0;
+}
+
+// Recebe como input o arquivo entrada
+int get_file_input(char * entrada){
+    char * filename = &entrada[10];
+    std::ifstream infile(filename);
+    if (!infile.is_open())
+        {
+            std::cerr << "Erro ao abrir o arquivo" << filename << std::endl;
+            return 1;
+        }
+    infile.close();
+    std::cout << "Arquivo recebido!"<< std::endl; 
+    return 0;
+}
+
+void output_to_program(std::string saida_prog1){
+    std::cout << "Input recebido de prog1: " << saida_prog1 << std::endl;
+}
+int main()
 {
 
-    //setLocale(LC_ALL,"");
-    //
     char* entrada = new char[TAM * sizeof(char*)];
 
-    char buffer[MAX_PATH];
+    char buffer[FILENAME_MAX];
     
-    //scanf("%c", )
-    while(strcmp(entrada, "exit")){
+    while(strcmp(entrada, "exit") != 0){
+        char buffer[FILENAME_MAX];
+        char *current_dir = getcwd(buffer, FILENAME_MAX);
 
-        GetModuleFileName(NULL, buffer, MAX_PATH);
-        std::cout << buffer << "\\" << "~$ ";
+        std::cout << ">> " << current_dir  << " ";
         std::cin.getline(entrada, TAM);
         
         if (strcmp(entrada, "ls") == 0)
         {
-            list_dir();
+            list_dir(current_dir);
         }else if (strncmp(entrada, "cd", 2) == 0)
         {
             if (!entrada[3])
@@ -219,10 +238,9 @@ int main(/*int argc, char *entrada[]*/)
                 change_dir(&entrada[3]);
             }
         }
-        //else if (strcmp(&entrada[0], "pwd") == 0)
         else if (strcmp(entrada, "pwd") == 0)
         {
-            print_dir();
+            print_dir(current_dir);
             
         }
         else if (strncmp(entrada, "cat", 3) == 0)
@@ -233,9 +251,11 @@ int main(/*int argc, char *entrada[]*/)
             }
             else
             {
+
                 cat(&entrada[4]);
             }
-        }else if(strncmp(entrada, "more", 4) == 0){
+        }
+        else if(strncmp(entrada, "more", 4) == 0){
             if (!entrada[5])
             {
                 std::cerr << "Nome do arquivo faltando: more [NOME_ARQUIVO]" << std::endl;
@@ -253,6 +273,40 @@ int main(/*int argc, char *entrada[]*/)
             {
                 head(&entrada[5]);
             }
+        }
+        else if(strncmp(entrada, "./prog1",7) == 0){
+            pid_t pid = fork();
+                if (pid == -1) {
+                    std::cerr << "Falha na execução do programa" << std::endl;
+                    return 1;
+                }
+                
+                if(strncmp(&entrada[8], ">",1) == 0){
+                    output_to_file(entrada);
+                }
+                else if(strncmp(&entrada[8], "<",1) == 0){
+                    get_file_input(entrada);
+                }
+                else if (strncmp(&entrada[8], "&",1) == 0 || !entrada[8]) {
+                     if (pid == 0) {
+                        std::cout << "Executando programa..." << std::endl;
+                    }
+                }
+                else if (strncmp(&entrada[8], "|",1) == 0 && &entrada[10]) {
+                     if (pid == 0) {
+                        std::string saida = "Output do prog1 a ser enviado para o prog2";
+                        output_to_program(saida);
+                    }
+                }
+                else if(entrada[8] && entrada[10]){
+                    if (pid == 0) {
+                    std::cout << "Executando programa com argumentos: " << &entrada[8]<< std::endl;
+                    }
+                }
+
+                
+                int status;
+                waitpid(pid, &status, 0);
         }
         else if(strcmp(entrada, "exit")) //implementando a leitura de programa 
         {
